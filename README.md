@@ -1,102 +1,96 @@
-## IoT제어 프로젝트
+<div align="center">
 
-* 시뮬레이터 및 프로젝트 관련 파일 다운로드
-  - https://drive.google.com/drive/folders/1rp54qL31ZIoHet7A9BlvpoDCCdGVsvLK?usp=sharing
+# 🤖 10JOBs — 스마트홈 IoT 로봇
 
-(위 경로에 위치한 프로그램 및 문서는 SSAFY 과정 내에서만 사용할 수 있으며 무단 복제 및 반출, 배포를 금합니다.)
+**집안의 10가지 일을 대신하는 ROS2 기반 가정용 로봇과 제어 앱**
 
+`SSAFY 5기 2학기 특화 프로젝트 (IoT 제어)` · `2021.08 ~ 2021.10 (7주)` · `5인 팀`
 
+![ROS2](https://img.shields.io/badge/ROS2-22314E?style=flat-square&logo=ros&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white)
+![TensorFlow](https://img.shields.io/badge/TensorFlow-FF6F00?style=flat-square&logo=tensorflow&logoColor=white)
+![Android](https://img.shields.io/badge/Android-3DDC84?style=flat-square&logo=android&logoColor=white)
 
-- TEST 방법
-  1. gitlab의 파일들을 clone한다.
-  2. ROS2 설정 및 실행
-  3. 시뮬레이터 설정
-  4. 앱 동작
+</div>
 
+---
 
+## 💡 프로젝트 소개
 
-### ROS2 설정 및 실행
+스마트홈 3D 시뮬레이터 위의 터틀봇(TurtleBot)을 ROS2로 제어해, 집 안을 스스로 돌아다니며 맵을 만들고 물건을 찾고 집을 지키는 **가정용 로봇**을 만들었습니다.
+사용자는 **Android 앱**으로 로봇과 가전을 원격으로 제어하고, 로봇의 카메라 화면을 실시간으로 볼 수 있습니다.
 
-[참고자료](https://lab.ssafy.com/s05-iot-ctrl/S05P21D201/-/blob/master/README/SSAFY%20%EC%8B%9C%EB%AE%AC%EB%A0%88%EC%9D%B4%ED%84%B0%20%EB%A9%94%EB%89%B4%EC%96%BCv5.pdf)
+---
 
-1. ROS2 설치
+## ✨ 주요 기능
 
-2. 터미널창 실행 후 명령어 입력 (p21 참고)
+| 기능 | 설명 |
+|---|---|
+| **맵 만들기** | 벽 따라가기(wall following) 자율주행으로 집 내부를 탐색하며 맵 생성 |
+| **경로 이동** | 생성한 맵에서 최단 경로를 계산해 목적지까지 주행 |
+| **물건 찾기** | TensorFlow로 학습시킨 객체 인식 모델로 카메라 영상에서 사용자가 찾는 물건 탐색 |
+| **기기 제어** | 앱에서 집 안의 가전 기기(조명·에어컨 등) 원격 제어 |
+| **실시간 보기** | 로봇 카메라 영상을 앱에서 실시간 확인 |
+| **방범 모드** | 집을 비운 동안 로봇이 순찰하며 이상 상황 감지 |
+| **배터리 표시** | 로봇 배터리 상태를 앱에 표시 |
 
-3. 코드 빌드하기 (p25 참고, 깃랩에서 클론한 파일중 catkin_ws폴더에서 실행)
+---
 
-4. 빌드 후 `call 저장한주소\catkin_ws\install\local_setup.bat` 실행 p26 명령어 입력창 참고
+## 🏗 시스템 구성
 
-5. sub3의 `final_launch.py`실행 p27 참고 (ssafy_bridge는 실행할 필요없습니다 , final_launch에 존재)
+```mermaid
+flowchart LR
+    App[Android App] <-- "제어 명령 / 상태·영상" --> Bridge[ROS2 Bridge]
+    Bridge <--> Nodes
 
-   `src\sub3\launch\`안에 파일존재 -> cd명령어로 폴더 이동하여 사용
+    subgraph Nodes["ROS2 Nodes (Python)"]
+        Map[맵 생성<br/>wall following]
+        Path[경로 계획<br/>최단 경로]
+        Detect[물건 찾기<br/>TensorFlow]
+        Guard[방범 모드]
+    end
 
+    Nodes <-- "센서 / 주행 명령" --> Sim[스마트홈 3D 시뮬레이터<br/>TurtleBot]
+```
 
+---
 
-- 서버에서 ros2를 실행 할 방법 연구중
+## 🛠 기술 스택
 
+| 구분 | 기술 |
+|---|---|
+| **Robot** | ROS2, Python, launch 파일 기반 노드 일괄 실행 |
+| **AI** | TensorFlow (객체 인식) |
+| **App** | Android (Android Studio) |
+| **Simulation** | 스마트홈 3D 시뮬레이터, TurtleBot |
 
+---
 
-### 시뮬레이터 설정
+## 👤 담당 역할 (장용원)
 
-[참고자료](https://lab.ssafy.com/s05-iot-ctrl/S05P21D201/-/blob/master/README/%EA%B0%9C%EB%B0%9C%ED%99%98%EA%B2%BD%20%EA%B5%AC%EC%B6%95%20%EB%A9%94%EB%89%B4%EC%96%BCv5.pdf)
+- 맵 생성과 경로 이동 등 로봇 주행 기능 개발
+- 물건 찾기용 객체 인식 모델 학습과 ROS2 노드 연동
+- Android 앱과 로봇 기능(기기 제어·실시간 보기·방범 모드) 연동
+- 전체 노드를 하나의 launch 파일로 실행하는 환경 구성
 
-1. 시뮬레이터 설치하기
+---
 
-2. 로그인 하기
+## 🧩 트러블슈팅
 
-   ID : ssafy08
+**시뮬레이터 카메라 모드 제약 → 기본 카메라 영상으로 직접 학습**
 
-   PW : ssafy08
+- **문제** — 시뮬레이터의 Semantic 카메라 모드를 쓰면 물체를 쉽게 구분할 수 있지만, 외부 코드에서는 카메라 모드를 바꿀 수 없었습니다.
+- **해결** — 기본 카메라 영상(None 모드)만으로 물건을 구분하도록 TensorFlow 객체 인식 모델을 직접 학습시켰습니다.
+- **배운 점** — 환경이 주는 편의 기능에 기대기보다, 실제 운영 조건에서 동작하는 방법을 찾아야 한다는 것을 배웠습니다.
 
-3. 맵과 터틀봇 선택하기
+---
 
-   ![image-20211004195650793](README.assets/image-20211004195650793.png)
+## 🚀 실행 방법
 
-   Map : `2. V_IND_SmartHome1`, Vehicle : `1. TurtleBot`
+1. ROS2 설치 후 `catkin_ws`에서 빌드
+2. `install/local_setup` 실행
+3. `src/sub3/launch/final_launch.py` 실행 (브리지 포함 전체 노드 실행)
+4. 시뮬레이터에서 맵 `V_IND_SmartHome1`, 차량 `TurtleBot`을 선택하고 Control Mode를 `AutoMode`로 설정
+5. Android 앱 설치 후 실행
 
-4. 네트워크 세팅
-
-   참고자료의 p15 ~ p16를 네트워크 세팅을 참고해주세요
-
-
-
-5. 센서 설정
-
-   참고자료의 p17 ~ P20를 참고해주세요
-
-   - Camera Ground Truth는 기본출력인 None
-
-
-
-6. 터틀봇 AutoMode 설정
-
-   참고자료의 p10 ~ p12를 참고해주세요
-
-   `Control Mode : AutoMode`로 설정해주세요
-
-
-
-### 앱동작
-
-1. apk파일을 다운로드 후 설치해주세요 [apk파일](https://lab.ssafy.com/s05-iot-ctrl/S05P21D201/-/blob/master/android/app/release/app-release.apk) , 접근 불가시 android - app - release - app-release.apk
-
-- 현재상태 
-  - 맵만들기 가능 (autoMode : wallFollowing과 연결중 , 금주내 해결 가능)
-  - 기기제어 앱 연결중 (금주내 가능)
-  - 실시간보기 앱 연결중(금주내 가능)
-  - 방범모드 앱 연결중(금주내 가능)
-  - 물건찾기 ( tenserflow를 통한 학습중 )
-    - 기존의 물건찾기는 카메라모드 변경 시(Semantic) 가능 (시뮬레이터 메뉴얼 p20 참고)
-    - 하지만 외부코드로 시뮬레이터 카메라모드변경이 불가능한 상황
-    - 따라서 기본 카메라모드(None)에서 물건찾기를 위한 학습 진행중
-  - 배터리 구현완료( 시뮬레이터에서 배터리기능을 지원하지않아서 0%로 표시됩니다.)
-
-
-
-2. 아이폰..
-   1. 안드로이드 스튜디오 앱 다운로드
-   2. 깃랩 코드중 android폴더로 open (좌측상단 file - open)
-      - open하게되면 각종 파일 설치로 인해 시간이 소요됩니다
-   3. 실행환경 `Nexus 5X API 24`, `system : Andriod 7.0 Nougat`으로 실행
-
+> 시뮬레이터와 교육 자료는 SSAFY 과정 내에서만 사용할 수 있어 이 저장소에 포함하지 않았습니다.
