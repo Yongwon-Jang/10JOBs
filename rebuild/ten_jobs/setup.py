@@ -25,6 +25,8 @@ setup(
             'path_planner = ten_jobs.nodes.path_planner:main',
             'object_finder = ten_jobs.nodes.object_finder:main',
             'guard_mode = ten_jobs.nodes.guard_mode:main',
+            'device_control = ten_jobs.nodes.device_control:main',
+            'battery_monitor = ten_jobs.nodes.battery_monitor:main',
         ],
     },
 )
