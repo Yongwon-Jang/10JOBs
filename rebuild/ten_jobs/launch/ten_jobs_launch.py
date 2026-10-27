@@ -25,5 +25,8 @@ def generate_launch_description():
              parameters=[{'robot_radius': 0.2}]),
         Node(package='ten_jobs', executable='object_finder', name='object_finder', output='screen',
              parameters=[{'model_dir': model_dir}]),
-        Node(package='ten_jobs', executable='guard_mode', name='guard_mode', output='screen'),
+        Node(package='ten_jobs', executable='guard_mode', name='guard_mode', output='screen',
+             parameters=[{'patrol_waypoints': [1.0, 1.0, 3.5, 1.0, 3.5, 4.0, 1.0, 4.0]}]),  # living room -> kitchen -> room -> entrance
+        Node(package='ten_jobs', executable='device_control', name='device_control', output='screen'),
+        Node(package='ten_jobs', executable='battery_monitor', name='battery_monitor', output='screen'),
     ])
