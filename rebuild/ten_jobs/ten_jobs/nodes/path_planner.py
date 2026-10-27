@@ -1,7 +1,7 @@
 """Plans the shortest path on the built map and drives the robot along it.
 
 Sub:  /map (OccupancyGrid), /odom (Odometry), /goal_pose (PoseStamped from the app)
-Pub:  /global_path (Path), /cmd_vel (Twist)
+Pub:  /global_path (Path), /cmd_vel (Twist), /goal_result (String: reached | failed)
 """
 import math
 
@@ -10,6 +10,7 @@ import rclpy
 from geometry_msgs.msg import PoseStamped, Twist
 from nav_msgs.msg import OccupancyGrid, Odometry, Path
 from rclpy.node import Node
+from std_msgs.msg import String
 
 from ten_jobs.algorithms.grid_path import astar, inflate, simplify
 
@@ -33,6 +34,7 @@ class PathPlanner(Node):
 
         self.path_pub = self.create_publisher(Path, '/global_path', 10)
         self.cmd_pub = self.create_publisher(Twist, '/cmd_vel', 10)
+        self.result_pub = self.create_publisher(String, '/goal_result', 10)
         self.create_subscription(OccupancyGrid, '/map', self.on_map, 1)
         self.create_subscription(Odometry, '/odom', self.on_odom, 10)
         self.create_subscription(PoseStamped, '/goal_pose', self.on_goal, 10)
@@ -62,12 +64,14 @@ class PathPlanner(Node):
     def on_goal(self, goal: PoseStamped):
         if self.blocked is None or self.pose is None:
             self.get_logger().warn('map or odometry not ready yet')
+            self.result_pub.publish(String(data='failed'))
             return
         start = self.world_to_cell(*self.pose[:2])
         target = self.world_to_cell(goal.pose.position.x, goal.pose.position.y)
         cells = astar(self.blocked, start, target)
         if not cells:
             self.get_logger().warn(f'no path from {start} to {target}')
+            self.result_pub.publish(String(data='failed'))
             return
 
         self.waypoints = [self.cell_to_world(c) for c in simplify(cells)][1:]
@@ -91,6 +95,7 @@ class PathPlanner(Node):
             self.waypoints.pop(0)
             if not self.waypoints:
                 self.cmd_pub.publish(Twist())
+                self.result_pub.publish(String(data='reached'))
                 self.get_logger().info('goal reached')
             return
 
